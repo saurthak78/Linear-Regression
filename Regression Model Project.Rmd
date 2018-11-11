@@ -1,0 +1,127 @@
+---
+title: "Regression Models Course Project"
+author: "Saurabh Thakur"
+date: "November 10, 2018"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+##Executive Summary##
+
+This report is a course project within the Regression Models course on the Data Science Specialization by Johns Hopkins University on Coursera.
+
+We estimate the relationship between type of transmission (manual or automatic) and other independant variables, such as weight (wt), 1/4 miles/time (qsec), along with miles per gallon (MPG), which will be our outcome. 
+
+####Instructions####
+We work for Motor Trend, a magazine about the automobile industry. Looking at a data set of a collection of cars, they are interested in exploring the relationship between a set of variables and miles per gallon (MPG) (outcome) We ask the following questions:
+
+Are automatic or manual transmission better for Miles Per Gallon (MPG)? Quantify the MPG difference between automatic and manual transmission cars
+
+Using simple linear regression model and multiple regression model we conclude that manual transmission cars when compared against automatic transmission cars adjusted by number of cylinders, gross horspower and weight gets a factor of 1.8 more miles per gallon.
+
+###Data Description###
+
+__Data Preparation and Exploratory Analysis__
+
+In this sedtion we look at the data, the various variables and perfrom
+exploratory analysis of the data.
+
+The data of this project are extracted from the 1974 Motor Trend US magazine, and comprises fuel consumption and 10 aspects of automobile design and performance for 32 automobiles (1973/74 models).
+
+The data consists of 32 observations on 11 variables.
+
+- **mpg**:	 Miles/(US) gallon
+- **cyl**:	 Number of cylinders
+- **disp**:	 Displacement (cu.in.)
+- **hp**:	 Gross horsepower
+- **drat**:	 Rear axle ratio
+- **wt**:	 Weight (lb/1000)
+- **qsec**:	 1/4 mile time
+- **vs**:	 V/S
+- **am**:	 Transmission (0 = automatic, 1 = manual)
+- **gear**:	 Number of forward gears
+- **carb**:	 Number of carburetors
+
+Here we are converting the variables having distinct values into factors.
+
+__Loading the libraries before hand.__
+``` {r load_lib, echo = TRUE}
+library(ggplot2)
+```
+
+```{r data_prep, echo=TRUE}
+data("mtcars")
+mtcars$cyl <- factor(mtcars$cyl)
+mtcars$vs <- factor(mtcars$vs)
+mtcars$gear <- factor(mtcars$gear)
+mtcars$carb <- factor(mtcars$carb)
+mtcars$am <- factor(mtcars$am,labels=c('Automatic','Manual'))
+str(mtcars)
+```
+
+
+
+To answer our questions we are interested initially in the relation of two parameters that are Transmission (am) and Miles per Gallon (MPG).
+
+This relation is evident in the plot of mpg ~ am, which is present in Appendix below.
+**Please refer to graphic figure 1 in the Appendix.**
+
+
+The plot show that manual transmissions have higher MPG's, but may have other variables that can play other role in determination of MPG, as `cyl`, `disp`, `hp`, `wt` and others. For example, it is common sense that the heavier the car, more likely he will fuel consumption.
+
+
+```{r models, echo=TRUE}
+init_model <- lm(mpg ~ ., data = mtcars)
+best_model <- step(init_model, direction = "both")
+```
+
+
+summary(best_model)
+
+
+base_model <- lm(mpg ~ am, data = mtcars)
+anova(base_model, best_model)
+
+
+t.test(mpg ~ am, data = mtcars)
+
+
+## APPENDIX - GRAPHICS##
+
+### Figure 1 : Boxplots of "mpg" versus "am"
+
+```{r,echo=TRUE}
+## GRAPHIC FIGURE 1
+plot(mpg ~ am, 
+    data = mtcars, 
+    col = (c("red", "blue")), 
+    main = "MPG BY TRANSMISSION TYPE (AM)", 
+    xlab = "Transmission Type (AM)", 
+    ylab = "Miles Per Gallon (MPG)")
+```
+
+### Figure 2 : Pairs graph
+
+```{r, fig.width = 10, fig.height = 10}
+## GRAPHIC FIGURE 2
+pairs(mtcars, 
+    panel = panel.smooth, 
+    main = "MTCARS PAIRS GRAPHS")
+```
+
+### Figure 3 : Residual plots
+
+```{r, echo=TRUE}
+# GRAPHIC FIGURE 3
+par(mfrow = c(2, 2))
+plot(best_model)
+```
+
+
+
+
