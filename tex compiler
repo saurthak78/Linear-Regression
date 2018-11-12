@@ -1,1 +1,2 @@
 https://miktex.org/2.9/setup
+tinytex::install_tinytex(force = TRUE)
